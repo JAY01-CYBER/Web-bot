@@ -1,0 +1,15 @@
+replicaCount: 1
+
+image:
+  repository: your-dockerhub-username/web-bot
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  port: 80
+
+env:
+  api_id: "your_api_id"
+  api_hash: "your_api_hash"
+  session: "your_session_string"
