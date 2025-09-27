@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-bot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-bot
+  template:
+    metadata:
+      labels:
+        app: web-bot
+    spec:
+      containers:
+      - name: web-bot
+        image: your-dockerhub-username/web-bot:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: API_ID
+          valueFrom:
+            secretKeyRef:
+              name: web-bot-secrets
+              key: api_id
+        - name: API_HASH
+          valueFrom:
+            secretKeyRef:
+              name: web-bot-secrets
+              key: api_hash
+        - name: SESSION
+          valueFrom:
+            secretKeyRef:
+              name: web-bot-secrets
+              key: session
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-bot-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: web-bot
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: web-bot-secrets
+type: Opaque
+stringData:
+  api_id: "your_api_id"
+  api_hash: "your_api_hash"
+  session: "your_session_string"
